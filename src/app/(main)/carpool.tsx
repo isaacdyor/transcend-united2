@@ -1,14 +1,30 @@
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import Button from "@/components/Button";
+import { useAuth } from "@/providers/AuthProvider";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "expo-router";
 
 export default function TabOneScreen() {
+  const { session } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert("Error signing out");
+    } else {
+      router.replace("/signin");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
-      <Button text="Press me!" onPress={() => console.log("Button prssed")} />
+      <Button text="Press me!" onPress={() => console.log(session)} />
+      <Button onPress={handleSignOut} text="Sign out" />
       <View
         style={styles.separator}
         lightColor="#eee"

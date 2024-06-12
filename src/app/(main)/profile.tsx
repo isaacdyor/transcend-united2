@@ -1,35 +1,53 @@
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
+import { useProfile } from "@/api/profiles";
 import { Text, View } from "@/components/Themed";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function TabTwoScreen() {
+  const { data, error, isLoading } = useProfile();
+  const { session } = useAuth();
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <Text>Error: {error.message}</Text>;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
+    <View>
+      <Text style={styles.title}>Profile Information</Text>
+
+      <Text style={styles.label}>Name:</Text>
+      <Text style={styles.value}>
+        {data.first_name} {data.last_name}
+      </Text>
+      <Text style={styles.label}>Email:</Text>
+      <Text style={styles.value}>{session?.user.email}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   title: {
-    fontSize: 20,
+    marginTop: 20,
+    fontSize: 24,
     fontWeight: "bold",
+
+    marginBottom: 20,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+
+  label: {
+    fontSize: 18,
+    color: "lightgray",
+    marginTop: 10,
+  },
+  value: {
+    fontSize: 20,
+    fontWeight: "500",
+    color: "gray",
+    marginBottom: 10,
   },
 });
